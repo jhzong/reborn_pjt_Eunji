@@ -31,7 +31,7 @@ def slist(request):
     user_input = request.GET.get('query', '')
     page = int(request.GET.get('page', 1))
     
-    # [1번 위치] 정렬 기준(sort) 받기
+    # 정렬 기준(sort) 받기
     # 손님이 버튼을 눌러서 보낸 'sort' 값을 받습니다. 없으면 기본값은 'sim'(정확도순)
     sort_param = request.GET.get('sort', 'sim')
     
@@ -45,7 +45,7 @@ def slist(request):
         target_query = "요리"
     
         
-    # [1.5번 위치] 네이버 API에게 보낼 정렬 조건 설정
+    # 네이버 API에게 보낼 정렬 조건 설정
     # 만약 손님이 '신상품순(new)'을 원하면, 네이버 API 코드인 'date'로 바꿔줍니다.
     # (인기순은 네이버가 모르니 그냥 'sim'으로 둡니다)
     if sort_param == 'new':
@@ -70,7 +70,8 @@ def slist(request):
     context = {
         'search_query': user_input,
         'current_page': page,
-        'books': [] # 일단 빈 리스트로 시작
+        'books': [], # 일단 빈 리스트로 시작
+        'is_next': False
     }
 
     try:
@@ -80,6 +81,7 @@ def slist(request):
         if response.status_code == 200:
             data = response.json()
             items = data.get('items', []) # 네이버가 준 책 8권 리스트
+            total_count= data.get('total',0) # 네이버가 알려주는 전체 책 개수 가져오기
             
             saved_books = [] # DB에 저장하거나 화면에 보여줄 책들을 담을 바구니
 
@@ -108,7 +110,7 @@ def slist(request):
                     saved_books.append(book)
             
             
-            # [2번 위치] 인기순 정렬 로직 (우리 DB 데이터로 줄 세우기)
+            # 인기순 정렬 로직 (우리 DB 데이터로 줄 세우기)
             # 네이버에서 다 받아와서 saved_books에 넣은 다음,
             # 만약 'popular'라면 조회수(bhit)를 기준으로 내림차순 정렬합니다.
             if sort_param == 'popular':
@@ -120,6 +122,11 @@ def slist(request):
             context['books'] = saved_books
             print(f"저장된 책 {len(saved_books)}권을 {sort_param} 기준으로 보여줍니다.")
 
+            if(page*display_count) < total_count:
+                context['is_next']= True
+            else:
+                context['is_next']= False
+                
         else:
             print(f"API 에러 발생: {response.status_code}")
 

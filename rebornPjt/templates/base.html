@@ -5,19 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}식당추천사이트{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/common.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/common_media.css">
-    <!--https://ko.wix.com/website/templates-->
-    {% block css %}{% endblock %}
-    {% block style %}
     
-    {% endblock %}
+    <!-- 헤더 메뉴와 관련된 css -->
+    <link rel="stylesheet" type="text/css" href="/static/css/common.css">
+    
+    {% block css %}
+    {% endblock css %}
+    
+
     <script src="/static/js/jquery-3.6.0.min.js"></script>
     <!-- 날짜 포맷함수 -->
     {% comment %} <script type="text/javascript" src="/static/js/moment.min.js"></script> {% endcomment %}
     <script src="/static/js/common.js"></script>
-    {% block script %}{% endblock %}
+    
+    {% block script %}
+    {% endblock script%}
+
+
 </head>
+
+
 <!-- JavaScript 추가 -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -66,16 +73,41 @@
         });
     });
 </script>
+
+
 <body>
     <!-- 헤더 메뉴 -->
     {% include "header.html" %}
 
+
+
     <!-- 메인 콘텐츠 영역 (푸터를 하단에 고정하기 위해 필요) -->
     <main class="content">
-        {% block body %}{% endblock %}
+        {% block body %}
+        {% endblock body %}
     </main>
 
+
+    
     <!-- 푸터 -->
      {% include "footer.html" %}
 </body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </html>

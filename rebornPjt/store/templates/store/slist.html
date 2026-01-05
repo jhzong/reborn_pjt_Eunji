@@ -1,22 +1,42 @@
-{% extends "ST__base.html" %}
-{% load humanize %} 
+{% extends "base.html" %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}책스토어 사이트{% endblock %}</title>
 
 
-{% block store__style %}
+{% block css %}
+    <style>
 
-        .container { width: 1100px; margin: 50px auto 50px; \
+        /* HEADER */
+        .store-header{background:url('/static/images/store/StoreBook.jpg') center/cover no-repeat; width:100%;height:260px;
+            margin-top:60px; margin-bottom:60px;}
+        .store-header h2{
+            font-size: 70px; /* 원하는 크기로 조절 (너무 크면 깨질 수 있으니 60~80px 추천) */
+            font-weight: bold; /* 글자 두껍게 */
+            color: white;
+            text-align:center;
+            padding-top:75px;
+        }
+
+
+        .container { width: 1100px; margin: 50px auto 50px; 
             background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
 
-        .filter-bar { display: flex; justify-content: space-between;\
-            align-items: center; border-bottom: 2px solid #eee; \
-            padding-bottom: 20px; margin-bottom: 30px;\
-            width:1100px; height:50px;}
+        .filter-bar { display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 2px solid #eee;
+            padding-bottom: 20px; margin-bottom: 30px;
+            width:1100px; height:70px;}
 
-        .filter-tabs{ display:flex; gap:25px; padding-left:18px; width:220px; height:47px;}
+        .filter-tabs{ display:flex; gap:25px; margin-top:30px; padding-left:18px; 
+            width:320px; height:47px;}
         
         .filter-tabs button { background: none; border: none; 
             margin-right: 20px; cursor: pointer; color: #999; transition: 0.3s; }
-        .filter-tabs button.active { color: #004680; font-size: 16px; font-weight: bold;}
+        .filter-tabs button.active { color: #004680; font-size: 15px; font-weight: bold;}
         
         /* 마우스를 올렸을 때(hover) 글자색을 파랗게 바꾸고 밑줄을 만듭니다 */
         .filter-tabs button:hover {border-bottom: 3px solid #004680;}
@@ -24,9 +44,9 @@
 
         /* 검색창 폼 스타일 */
         .search-box { display: flex; border: 3px solid #ddd; border-radius: 25px;
-             width: 470px; height:47px; }
-        .search-box input { border: none; outline: none; flex: 1; background:#f9f9f9;
-            margin-left:20px; margin-top:4px; width:360px; height:35px;}
+             width: 470px; height:47px; margin-top:18px;}
+        .search-box input { border: none; outline: none; flex: 1;
+            margin-left:20px; margin-top:4px; width:380px; height:35px;}
         .search-box button { background: #004680; color: white; 
             border: none; border-radius: 20px; padding: 5px 15px; cursor: pointer; }
         
@@ -37,7 +57,7 @@
         /* 링크 스타일 제거 (카드 전체를 링크로 감쌀 경우) */
         a.book-link { text-decoration: none; color: inherit; display: block; }
         
-        .book-item { display: flex; align-items: flex-start; gap: 20px; padding: 10px; \
+        .book-item { display: flex; align-items: flex-start; gap: 20px; padding: 10px;
             transition: transform 0.2s; }
         .book-item:hover { transform: translateY(-5px); background-color: #f8f9fa; border-radius: 10px;}
         
@@ -65,21 +85,45 @@
     .page-btn:hover {
         background-color: #003366;
     }
-{% endblock store__style %}
-</head>
+    </style>
+{% endblock css %}
 
 
 
 
+{% block script %}
+    <script>
+        function filterBooks(type) {
+            // type에는 'sim', 'popular' 또는 'new'가 들어옵니다.
+            
+            // 1. 버튼 색상 바꾸기 (시각적 효과)
+            const buttons = document.querySelectorAll('.filter-tabs button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 2. [핵심] 주소창(URL)을 변경해서 서버에 신호를 보냅니다!
+            // 물음표(?) 뒤에 오는 것을 '쿼리 스트링'이라고 부르는데, 
+            // 여기에 sort라는 이름표로 type 값을 담아 보냅니다.
+            
+            location.href = '?sort=' + type;
+        }
+    </script>
+{% endblock script %}
 
-<body>
-<!-- 메인페이지 바디블록 -->
-{% block store__html %}
+
+
+
+{% block body %}
+<!-- 헤더 이미지삽입부분 -->
+<div class='store-header'>
+    <h2>RIBBON BOOKSTORE</h2>
+</div>
 
 <!-- 1. 필터링 버튼 부분 -->
 <div class="container">
     <div class="filter-bar">
         <div class="filter-tabs">
+            <button class="active" name='sim' onclick="filterBooks('sim')">정확도순</button>
             <button class="active" name='popular' onclick="filterBooks('popular')">인기순</button>
             <button class="active" name='new' onclick="filterBooks('new')">신상품순</button>
         </div>
@@ -114,7 +158,7 @@
                             출간일: {{ b.bpubdate }}
                         </p>
                         <div class="price-area">
-                            <div class="discount-price">{{ b.bprice|intcomma }}원</div>
+                            <div class="discount-price">{{ b.bprice }}원</div>
                         </div>
                     </div>
                 </div>
@@ -124,14 +168,13 @@
             <p style="text-align: center; grid-column: span 2; padding: 50px;">검색 결과가 없습니다.</p>
         {% endif %}
         </div>
-</div>
 
-</div> 
+
+ 
     <!-- 3. 이전페이지 다음페이지 넘기기 버튼 -->
     <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
-        
         {% if current_page > 1 %}
-            <a href="?query={{ search_query }}&page={{ current_page|add:-1 }}" class="page-btn">
+            <a href="?query={{ search_query }}&page={{ current_page|add:-1 }}&sort={{ sort }}" class="page-btn">
                 &lt; 이전 페이지
             </a>
         {% endif %}
@@ -140,32 +183,16 @@
             {{ current_page }} 페이지
         </span>
 
-        <a href="?query={{ search_query }}&page={{ current_page|add:1 }}" class="page-btn">
-            다음 페이지 &gt;
-        </a>
-
+        {% if is_next %}
+            <a href="?query={{ search_query }}&page={{ current_page|add:1 }}&sort={{ sort }}" class="page-btn">
+                다음 페이지 &gt;
+            </a>
+        {% endif %}
     </div>
-</div>
-{% endblock store__html %} 
 
-{% block store__js %}
-<script>
-    function filterBooks(type) {
-        // type에는 'popular' 또는 'new'가 들어옵니다.
-        
-        // 1. 버튼 색상 바꾸기 (시각적 효과)
-        const buttons = document.querySelectorAll('.filter-tabs button');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        
-        // 2. [핵심] alert를 지우고, 주소창(URL)을 변경해서 서버에 신호를 보냅니다!
-        // 물음표(?) 뒤에 오는 것을 '쿼리 스트링'이라고 부르는데, 
-        // 여기에 sort라는 이름표로 type 값을 담아 보냅니다.
-        
-        location.href = '?sort=' + type;
-    }
-</script>
-{% endblock store__js %}
+</div>
+{% endblock body %}
+
 
 </body>
 </html>
