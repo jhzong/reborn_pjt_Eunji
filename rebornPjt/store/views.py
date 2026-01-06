@@ -1,137 +1,102 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.core.paginator import Paginator # 동료가 추천한 그 도구!
+from django.http import HttpResponse
 import requests
 from .models import Book
 from secret import api__func
 
-# 책정보 상세보기 
-def sview(request,bisbn):
+# ------------------------------------------------------------------
+# [관리자용] 1. 네이버에서 요리책 데이터를 몽땅 가져와서 내 DB에 저장하는 함수
+# 주소창에 /init_db 라고 치면 실행되게 연결하면 됩니다.
+# ------------------------------------------------------------------
+def init_db(request):
+    # 1. API 키 설정
+    secret__list = api__func.naver__API()
+    headers = {
+        "X-Naver-Client-Id": secret__list[0],
+        "X-Naver-Client-Secret": secret__list[1]
+    }
     
-    print("도서 고유번호: ",bisbn)
+    # 2. 요리책 100권 가져오기 (네이버는 한 번에 최대 100개까지 줌)
+    url = "https://openapi.naver.com/v1/search/book.json"
+    params = {
+        "query": "요리", 
+        "display": 100, # 100개를 한 번에!
+        "sort": "sim"   # 일단 정확도순으로 가져옴
+    }
+
+    response = requests.get(url, headers=headers, params=params)
     
-    # Book테이블에서 < bisbn = 1 >
-    qs= Book.objects.get(bisbn=bisbn)
-    
-    # [추가] 조회수 증가 로직 (여기가 핵심!)
-    qs.bhit += 1   # 현재 조회수에 1을 더함
-    qs.save()      # 변경된 내용을 DB에 "저장" (이걸 해야 반영됨)
-    context= {'sbook':qs}
-    
-    return render(request,'store/sview.html',context)
+    if response.status_code == 200:
+        items = response.json().get('items', [])
+        
+        # 가져온 책들을 내 DB(Book 모델)에 저장
+        for item in items:
+            if item.get('isbn'):
+                # 제목에서 <b> 태그 제거
+                clean_title = item['title'].replace('<b>', '').replace('</b>', '')
+                
+                # 이미 있는 책은 건너뛰고(get), 없는 책만 생성(create)
+                Book.objects.get_or_create(
+                    bisbn=item['isbn'],
+                    defaults={
+                        'btitle': clean_title,
+                        'bauthor': item['author'],
+                        'bpublisher': item['publisher'],
+                        'bpubdate': item['pubdate'],
+                        'bprice': int(item.get('discount', 0) or 0),
+                        'bimage': item['image'],
+                        'blink': item['link'],
+                        'bdescription': item['description'],
+                        'bhit': 0 # 처음엔 조회수 0
+                    }
+                )
+        return HttpResponse(f"{len(items)}권의 책을 데이터베이스에 저장했습니다!")
+    else:
+        return HttpResponse("API 호출 실패")
 
 
-# 책카드 목록보기
+# ------------------------------------------------------------------
+# [사용자용] 2. 책 목록 보기 (이제 DB에서만 가져옵니다!)
+# ------------------------------------------------------------------
 def slist(request):
     
-    # 1. API 키 설정
-    secret__list= api__func.naver__API()
-    client_id= secret__list[0]
-    client_secret= secret__list[1]
+    # 1. 정렬 기준 받기 (기본값: 최신순)
+    # url에서 ?sort=popular 같은 꼬리표를 확인합니다.
+    sort_param = request.GET.get('sort', 'new')
 
-    # 2. 사용자 검색어 및 페이지 계산 (**API 호출 전에** 해야 함!)
-    user_input = request.GET.get('query', '')
-    page = int(request.GET.get('page', 1))
-    
-    # 정렬 기준(sort) 받기
-    # 손님이 버튼을 눌러서 보낸 'sort' 값을 받습니다. 없으면 기본값은 'sim'(정확도순)
-    sort_param = request.GET.get('sort', 'sim')
-    
-    display_count = 8
-    start_index = (page - 1) * display_count + 1
-
-    # 검색어 필터링 로직
-    if user_input:
-        target_query = f"{user_input} 요리"
+    # 2. DB에서 모든 책 꺼내오기 (일단 다 가져와서 준비)
+    if sort_param == 'popular':
+        # 조회수(bhit) 내림차순(-), 그다음 최신순
+        qs = Book.objects.all().order_by('-bhit', '-bpubdate')
     else:
-        target_query = "요리"
+        # 신상품(bpubdate) 내림차순(-) (기본값)
+        qs = Book.objects.all().order_by('-bpubdate')
+
+    # 3. 페이징 처리 (동료가 알려준 핵심 로직!)
+    # 가져온 qs(책 뭉치)를 8개씩 자릅니다.
+    paginator = Paginator(qs, 8) 
     
-        
-    # 네이버 API에게 보낼 정렬 조건 설정
-    # 만약 손님이 '신상품순(new)'을 원하면, 네이버 API 코드인 'date'로 바꿔줍니다.
-    # (인기순은 네이버가 모르니 그냥 'sim'으로 둡니다)
-    if sort_param == 'new':
-        naver_sort = 'date'
-    else:
-        naver_sort = 'sim'
+    page_number = request.GET.get('page', 1) # 사용자가 요청한 페이지 번호
+    page_obj = paginator.get_page(page_number) # 해당 페이지의 책들만 딱 꺼냄
 
-    # 3. 네이버 API 호출 준비
-    url = "https://openapi.naver.com/v1/search/book.json"
-    headers = {
-        "X-Naver-Client-Id": 'C_MasXzr3nCzi13g19wN',
-        "X-Naver-Client-Secret": 'mUtwlSX2ES'
-    }
-    params = {
-        "query": target_query,
-        "display": display_count, 
-        "sort": "sim",
-        "start": start_index  # 계산된 시작 위치 적용
-    }
-
-    # 템플릿에 보낼 선물 가방 미리 준비
     context = {
-        'search_query': user_input,
-        'current_page': page,
-        'books': [], # 일단 빈 리스트로 시작
-        'is_next': False
+        'books': page_obj,   # 8개만 들어있는 선물상자
+        'sort': sort_param,  # 정렬 기준 기억하기 (버튼 색깔 유지용)
     }
 
-    try:
-        # 4. 실제 API 호출
-        response = requests.get(url, headers=headers, params=params)
-        
-        if response.status_code == 200:
-            data = response.json()
-            items = data.get('items', []) # 네이버가 준 책 8권 리스트
-            total_count= data.get('total',0) # 네이버가 알려주는 전체 책 개수 가져오기
-            
-            saved_books = [] # DB에 저장하거나 화면에 보여줄 책들을 담을 바구니
-
-            # ★ 핵심 수정: 리스트(items)는 반드시 반복문(for)을 돌려야 함
-            for item in items:
-                # ISBN이 있는 경우만 처리
-                if item.get('isbn'):
-                    # DB에 저장 (이미 있으면 가져오고, 없으면 생성)
-                    # 주의: models.py의 필드명과 정확히 일치해야 합니다. (예: title, author...)
-                    book, created = Book.objects.get_or_create(
-                        
-                        # 검색조건
-                        bisbn=item['isbn'],
-                        # 책이 없어서 새로 만들어야 할 때 사용하는 정보들
-                        defaults={
-                            'btitle': item['title'].replace('<b>', '').replace('</b>', ''),
-                            'bauthor': item['author'],
-                            'bpublisher': item['publisher'],
-                            'bpubdate': item['pubdate'],
-                            'bprice': int(item['discount']),
-                            'bimage': item['image'],
-                            'blink': item['link'],
-                            'bdescription': item['description']
-                        }
-                    )
-                    saved_books.append(book)
-            
-            
-            # 인기순 정렬 로직 (우리 DB 데이터로 줄 세우기)
-            # 네이버에서 다 받아와서 saved_books에 넣은 다음,
-            # 만약 'popular'라면 조회수(bhit)를 기준으로 내림차순 정렬합니다.
-            if sort_param == 'popular':
-                # 파이썬 리스트 정렬 기능(sort)을 사용합니다.
-                # reverse=True는 '큰 숫자부터(내림차순)'라는 뜻입니다.
-                saved_books.sort(key=lambda x: x.bhit, reverse=True)
-
-            # 정렬이 끝난 목록을 context에 담기
-            context['books'] = saved_books
-            print(f"저장된 책 {len(saved_books)}권을 {sort_param} 기준으로 보여줍니다.")
-
-            if(page*display_count) < total_count:
-                context['is_next']= True
-            else:
-                context['is_next']= False
-                
-        else:
-            print(f"API 에러 발생: {response.status_code}")
-
-    except Exception as e:
-        print(f"서버 에러: {e}")
-
-    # 5. 최종 렌더링
     return render(request, 'store/slist.html', context)
+
+
+# ------------------------------------------------------------------
+# [사용자용] 3. 책 상세 보기 (기존 코드 유지)
+# ------------------------------------------------------------------
+def sview(request, bisbn):
+    qs = Book.objects.get(bisbn=bisbn)
+    
+    # 조회수 증가
+    qs.bhit += 1
+    qs.save()
+    
+    context = {'sbook': qs}
+    return render(request, 'store/sview.html', context)

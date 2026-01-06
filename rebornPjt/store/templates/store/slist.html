@@ -114,83 +114,99 @@
 
 
 {% block body %}
-<!-- 헤더 이미지삽입부분 -->
-<div class='store-header'>
-    <h2>RIBBON BOOKSTORE</h2>
-</div>
-
-<!-- 1. 필터링 버튼 부분 -->
-<div class="container">
-    <div class="filter-bar">
-        <div class="filter-tabs">
-            <button class="active" name='sim' onclick="filterBooks('sim')">정확도순</button>
-            <button class="active" name='popular' onclick="filterBooks('popular')">인기순</button>
-            <button class="active" name='new' onclick="filterBooks('new')">신상품순</button>
-        </div>
-
-        <form action="" method="get" class="search-box">
-           <input type="text" name="query" placeholder="찾고 싶은 레시피나 식재료를 입력하세요 (예: 파스타, 김치)"\
-           value="{{ search_query }}">
-            <button type="submit">검색</button>
-        </form>
+    <!-- 헤더 이미지삽입부분 -->
+    <div class='store-header'>
+        <h2>RIBBON BOOKSTORE</h2>
     </div>
 
+    <!-- 1. 필터링 버튼 부분 -->
+    <div class="container">
+        <div class="filter-bar">
+            <div class="filter-tabs">
+                <button class="active" name='popular' onclick="filterBooks('popular')">인기순</button>
+                <button class="active" name='new' onclick="filterBooks('new')">신상품순</button>
+            </div>
+        </div>
 
-    <!-- 2. 도서 카드형식으로 나열부분 -->
-    <div class="book-grid" id="bookGrid">
-        {% if books %}
 
-            {% for b in books %}
-            <a href="/store/sview/{{b.bisbn}}" class="book-link">
-                <div class="book-item">
-                    <div class="book-image">
-                        {% if b.bimage %}
-                            <img src="{{ b.bimage }}" alt="{{ b.btitle|striptags }}">
-                        {% else %}
-                            <img src="https://via.placeholder.com/140x200?text=No+Image" alt="이미지 없음">
-                        {% endif %}
-                    </div>
-                    <div class="book-info">
-                        <h3>{{ b.btitle|striptags }}</h3>
-                        <p>
-                            저자: {{ b.bauthor }}<br>
-                            출판사: {{ b.bpublisher }}<br>
-                            출간일: {{ b.bpubdate }}
-                        </p>
-                        <div class="price-area">
-                            <div class="discount-price">{{ b.bprice }}원</div>
+        <!-- 2. 도서 카드형식으로 나열부분 -->
+        <div class="book-grid" id="bookGrid">
+            {% if books %}
+
+                {% for b in books %}
+                <a href="/store/sview/{{b.bisbn}}" class="book-link">
+                    <div class="book-item">
+                        <div class="book-image">
+                            {% if b.bimage %}
+                                <img src="{{ b.bimage }}" alt="{{ b.btitle|striptags }}">
+                            {% else %}
+                                <img src="https://via.placeholder.com/140x200?text=No+Image" alt="이미지 없음">
+                            {% endif %}
+                        </div>
+                        <div class="book-info">
+                            <h3>{{ b.btitle|striptags }}</h3>
+                            <p>
+                                저자: {{ b.bauthor }}<br>
+                                출판사: {{ b.bpublisher }}<br>
+                                출간일: {{ b.bpubdate }}
+                            </p>
+                            <div class="price-area">
+                                <div class="discount-price">{{ b.bprice }}원</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
-            {% endfor %}
-        {% else %}
-            <p style="text-align: center; grid-column: span 2; padding: 50px;">검색 결과가 없습니다.</p>
-        {% endif %}
+                </a>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; grid-column: span 2; padding: 50px;">검색 결과가 없습니다.</p>
+            {% endif %}
+            </div>
+
+
+    
+        <!-- 하단페이징 -->
+        <div class="btnAreaList" style="text-align: center; margin-top: 30px;">
+            
+            <div class="allPageMoving1">
+                {% if books.has_previous %}
+                <a href="?page=1&sort={{ sort }}" class="n">
+                    <img src="/static/images/common/btn_pre2.gif" alt="처음으로"/>
+                </a>
+                <a href="?page={{ books.previous_page_number }}&sort={{ sort }}" class="pre">
+                    <img src="/static/images/common/btn_pre1.gif" alt="앞페이지로"/>
+                </a>
+                
+                {% else %}
+                <a class="n"><img src="/static/images/common/btn_pre2.gif" alt="처음으로"/></a>
+                <a class="pre"><img src="/static/images/common/btn_pre1.gif" alt="앞페이지로"/></a>
+                {% endif %}
+
+                {% for p in books.paginator.page_range %}
+                    {% if p >= books.number|add:'-3' and p <= books.number|add:'3' %}
+                    
+                        {% if p == books.number %}
+                            <strong style="color: red; font-size: 1.2em; margin: 0 5px;">{{ p }}</strong>
+                        {% else %}
+                            <a href="?page={{ p }}&sort={{ sort }}" style="margin: 0 5px;">{{ p }}</a>
+                    {% endif %}
+                    
+                    {% endif %}
+                {% endfor %}
+
+                {% if books.has_next %}
+                    <a href="?page={{ books.next_page_number }}&sort={{ sort }}" class="next">
+                        <img src="/static/images/common/btn_next1.gif" alt="뒤페이지로"/>
+                    </a>
+                    <a href="?page={{ books.paginator.num_pages }}&sort={{ sort }}" class="n">
+                        <img src="/static/images/common/btn_next2.gif" alt="마지막페이지로"/>
+                    </a>
+                {% else %}
+                    <a class="next"><img src="/static/images/common/btn_next1.gif" alt="뒤페이지로"/></a>
+                    <a class="n"><img src="/static/images/common/btn_next2.gif" alt="마지막페이지로"/></a>
+                {% endif %}    
+            </div>
         </div>
-
-
- 
-    <!-- 3. 이전페이지 다음페이지 넘기기 버튼 -->
-    <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
-        {% if current_page > 1 %}
-            <a href="?query={{ search_query }}&page={{ current_page|add:-1 }}&sort={{ sort }}" class="page-btn">
-                &lt; 이전 페이지
-            </a>
-        {% endif %}
-
-        <span style="margin: 0 15px; font-weight: bold;">
-            {{ current_page }} 페이지
-        </span>
-
-        {% if is_next %}
-            <a href="?query={{ search_query }}&page={{ current_page|add:1 }}&sort={{ sort }}" class="page-btn">
-                다음 페이지 &gt;
-            </a>
-        {% endif %}
     </div>
-
-</div>
 {% endblock body %}
 
 
