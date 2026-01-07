@@ -92,11 +92,13 @@ def slist(request):
 # [사용자용] 3. 책 상세 보기 (기존 코드 유지)
 # ------------------------------------------------------------------
 def sview(request, bisbn):
+    page_number = request.GET.get('page', 1)
+    sort_param = request.GET.get('sort', 'new')
     qs = Book.objects.get(bisbn=bisbn)
     
     # 조회수 증가
     qs.bhit += 1
     qs.save()
     
-    context = {'sbook': qs}
+    context = {'sbook': qs,'sort':sort_param,'page':page_number}
     return render(request, 'store/sview.html', context)

@@ -134,7 +134,7 @@
             {% if books %}
 
                 {% for b in books %}
-                <a href="/store/sview/{{b.bisbn}}" class="book-link">
+                <a href="/store/sview/{{b.bisbn}}?page={{ page }}&sort={{ sort }}" class="book-link">
                     <div class="book-item">
                         <div class="book-image">
                             {% if b.bimage %}
