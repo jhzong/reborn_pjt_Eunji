@@ -33,7 +33,8 @@ INSTALLED_APPS = [
     'store',
     'restaurants',
     'member',
-]
+    'myPage',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

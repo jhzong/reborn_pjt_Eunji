@@ -11,6 +11,7 @@ urlpatterns = [
     path('store/', include('store.urls')),
     path('board/', include('board.urls')),
     path('restaurants/', include('restaurants.urls')),
+    path('myPage/', include('myPage.urls')),
 ]
 
 # 파일업로드시 url구성, urlpatterns에 추가 설정

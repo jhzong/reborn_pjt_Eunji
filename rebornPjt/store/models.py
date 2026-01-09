@@ -1,6 +1,5 @@
 from django.db import models
 
-from django.db import models
 
 class Book(models.Model):
     # 엑셀의 헤더(컬럼)를 만드는 과정입니다.
@@ -21,4 +20,4 @@ class Book(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.title
+        return f"{self.btitle},{self.bpublisher},{self.bpubdate}"
