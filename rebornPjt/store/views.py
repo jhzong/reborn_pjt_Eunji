@@ -1,13 +1,45 @@
 from django.shortcuts import render, redirect
 from django.core.paginator import Paginator # 동료가 추천한 그 도구!
 from django.http import HttpResponse
-import requests
 from .models import Book
 from secret import api__func
+import requests
+
+
+# -------------------------------------------------------------
+# [도서관리자페이지]: 도서를 추가,수정,삭제할 수 있는 관리자페이지
+# -------------------------------------------------------------
+def smanage(request):
+    # user_id = request.session.get('session_id')
+    # if user_id == 'oeunji27':
+        if request.method == 'GET':
+            return render(request,'store/smanage.html')
+        
+        elif request.method == 'POST':
+            btitle = request.POST.get('btitle') # 책제목
+            bauthor = request.POST.get('bauthor')# 작가
+            bpublisher = request.POST.get('bpublisher')# 출판사
+            bpubdate = request.POST.get('bpubdate')# 출판일
+            bprice = request.POST.get('bprice') # 가격
+            bimage = request.FILES.get('bimage') # 이미지
+            bdescription = request.POST.get('bdescription') # 책 소개
+            bisbn = request.POST.get('bisbn') # 책고유번호
+
+            Book.objects.create(
+                btitle=btitle,
+                bauthor=bauthor,
+                bpublisher=bpublisher,
+                bpubdate=bpubdate,
+                bprice=bprice,
+                bimage=bimage,
+                bdescription=bdescription,
+                bisbn=bisbn
+            )
+            return redirect('store:slist')
+
 
 # ------------------------------------------------------------------
-# [관리자용] 1. 네이버에서 요리책 데이터를 몽땅 가져와서 내 DB에 저장하는 함수
-# 주소창에 /init_db 라고 치면 실행되게 연결하면 됩니다.
+# 네이버API에서 도서100권을 가져오는 함수
 # ------------------------------------------------------------------
 def init_db(request):
     # 1. API 키 설정
@@ -57,7 +89,7 @@ def init_db(request):
 
 
 # ------------------------------------------------------------------
-# [사용자용] 2. 책 목록 보기 (이제 DB에서만 가져옵니다!)
+# [slist] 도서를 DB에 저장하고 필터링에 따라 도서목록을 보여주는 함수
 # ------------------------------------------------------------------
 def slist(request):
     

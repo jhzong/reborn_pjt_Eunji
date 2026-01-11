@@ -9,7 +9,6 @@ class Book(models.Model):
     bpubdate= models.DateField(verbose_name="출판일", null=True, blank=True)
     bprice = models.IntegerField(verbose_name="가격", null=True, blank=True)
     bimage = models.URLField(verbose_name="이미지", null=True, blank=True)
-    blink = models.URLField(verbose_name="구매 링크", null=True, blank=True)
     bdescription = models.TextField(verbose_name="책 소개", null=True, blank=True)
     bhit = models.IntegerField(default=0, verbose_name="조회수")
     
