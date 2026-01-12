@@ -6,38 +6,6 @@ from secret import api__func
 import requests
 
 
-# -------------------------------------------------------------
-# [도서관리자페이지]: 도서를 추가,수정,삭제할 수 있는 관리자페이지
-# -------------------------------------------------------------
-def smanage(request):
-    # user_id = request.session.get('session_id')
-    # if user_id == 'oeunji27':
-        if request.method == 'GET':
-            return render(request,'store/smanage.html')
-        
-        elif request.method == 'POST':
-            btitle = request.POST.get('btitle') # 책제목
-            bauthor = request.POST.get('bauthor')# 작가
-            bpublisher = request.POST.get('bpublisher')# 출판사
-            bpubdate = request.POST.get('bpubdate')# 출판일
-            bprice = request.POST.get('bprice') # 가격
-            bimage = request.FILES.get('bimage') # 이미지
-            bdescription = request.POST.get('bdescription') # 책 소개
-            bisbn = request.POST.get('bisbn') # 책고유번호
-
-            Book.objects.create(
-                btitle=btitle,
-                bauthor=bauthor,
-                bpublisher=bpublisher,
-                bpubdate=bpubdate,
-                bprice=bprice,
-                bimage=bimage,
-                bdescription=bdescription,
-                bisbn=bisbn
-            )
-            return redirect('store:slist')
-
-
 # ------------------------------------------------------------------
 # 네이버API에서 도서100권을 가져오는 함수
 # ------------------------------------------------------------------

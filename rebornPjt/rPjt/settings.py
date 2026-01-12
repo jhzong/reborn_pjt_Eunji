@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'restaurants',
     'member',
     'myPage',
+    'Book_Manage',
     ]
 
 MIDDLEWARE = [
