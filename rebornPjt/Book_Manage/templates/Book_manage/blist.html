@@ -163,19 +163,19 @@
         <tbody>
             {% if list %}
             {% for b in list  %}
-                <tr>
-                    <td><a href="/Book_Manage/bview/{{b.bisbn}}/">{{b.bisbn}}</a></td>
-                    <td class="title"><a href="/Book_Manage/bview/{{b.bisbn}}/">{{b.btitle}}</a></td>
-                    <td>{{b.bauthor}}</td>
-                    <td class="date">{{b.bpublisher}}</td>
-                    <td class="views">{{b.bpubdate}}</td>
-                    <td>
-                        <button type="button" onclick="location.href='/Book_Manage/bupdate/{{b.bisbn}}/'">수정하기</button>
-                    </td>
-                    <td>
-                        <button type="button" onclick="location.href='/Book_Manage/bdelete/{{b.bisbn}}'">삭제하기</button>
-                    </td>
-                </tr>
+            <tr>
+                <td><a href="/Book_Manage/bview/{{b.bisbn}}/">{{b.bisbn}}</a></td>
+                <td class="title"><a href="/Book_Manage/bview/{{b.bisbn}}/">{{b.btitle}}</a></td>
+                <td>{{b.bauthor}}</td>
+                <td class="date">{{b.bpublisher}}</td>
+                <td class="views">{{b.bpubdate}}</td>
+                <td>
+                    <button type="button" onclick="location.href='/Book_Manage/bupdate/{{b.bisbn}}/'">수정하기</button>
+                </td>
+                <td>
+                    <button type="button" onclick="deleteBook('{{b.bisbn}}')">삭제하기</button>
+                </td>
+            </tr>
             {% endfor %}
             {% else %}
             <tr>
@@ -224,5 +224,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+    function deleteBook(isbn){
+    if (confirm('정말 삭제하시겠습니까?')){
+    alert('삭제 처리를 진행합니다.'); 
+    location.href = '/Book_Manage/bdelete/' + isbn;
+    }
+    else {
+    return false;
+    }
+    }
+</script>
 </body>
 </html>
