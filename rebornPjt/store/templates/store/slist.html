@@ -49,14 +49,7 @@
             border-bottom: 3px solid #004680; 
         }
 
-        /* 검색창 */
-        .search-box { display: flex; border: 3px solid #ddd; border-radius: 25px;
-             width: 470px; height:47px; margin-top:18px; padding: 0 10px;}
-        .search-box input { border: none; outline: none; flex: 1;
-            margin-left:10px; margin-top:0; height:100%; font-size: 16px;}
-        .search-box button { background: #004680; color: white; 
-            border: none; border-radius: 20px; padding: 0 20px; cursor: pointer; height: 35px; margin-top: 3px;}
-
+        
         /* TOP3 영역 */
         .total-top3-book{
             width: 100%; /* 부모 크기에 맞춤 */
@@ -186,11 +179,6 @@
                 <button class="{% if sort == 'popular' %}active{% endif %}" onclick="filterBooks('popular')">인기순</button>
                 <button class="{% if sort == 'new' %}active{% endif %}" onclick="filterBooks('new')">신상품순</button>
                 <a href="../../Book_Manage/blist/" class="only__manager">도서관리<br>(관리자만 접근가능)</a>
-            </div>
-            
-            <div class="search-box">
-                <input type="text" placeholder="도서명 검색">
-                 <button>검색</button>
             </div>
         </div>
 
