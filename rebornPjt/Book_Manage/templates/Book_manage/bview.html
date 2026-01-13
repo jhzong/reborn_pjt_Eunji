@@ -23,7 +23,11 @@
     .detail-title {
       font-size: 28px;
       font-weight: bold;
+<<<<<<< HEAD
       margin-bottom: 70px;
+=======
+      margin-bottom: 20px;
+>>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
       text-align: center;
     }
     .detail-info {
@@ -38,7 +42,11 @@
     .detail-content {
       font-size: 15px;
       line-height: 1.6;
+<<<<<<< HEAD
       color: #888;
+=======
+      color: #1a1a1a;
+>>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
       white-space: pre-wrap; /* 줄바꿈 유지 */
       margin-bottom: 40px;
       border-bottom: 1px solid #e0e0e0;
@@ -75,6 +83,7 @@
   <!-- Detail View -->
   <div class="detail-container">
     {% if book %}
+<<<<<<< HEAD
       <div class="detail-title">{{book.btitle}}</div>
       <div class="detail-info">
         <div>지은이: {{book.bauthor}}</div>
@@ -90,6 +99,25 @@
         <div> 첨부된 파일이 없습니다.</div>
         {% endif %}
       </div>
+=======
+      {% for b in book%}
+        <div class="detail-title">{{b.btitle}}</div>
+        <div class="detail-info">
+          <div>지은이: {{b.bauthor}}</div>
+          <div>출판사: {{b.bpublisher}}</div>
+          <div>출판일: {{b.bpubdate}}</div>
+          <div>책가격: {{b.bprice}}</div>
+        </div>
+        <div class="detail-content">
+          책 소개: <br>{{b.bdescription}}<br>
+          {% if b.bimage %}
+          <img src='/media/{{b.bimage}}' style='width:150px;'>
+          {% else %}
+          <div> 첨부된 파일이 없습니다.</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+>>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
     {% endif %}
     <div class="detail-buttons">
       <a href="/Book_Manage/blist/">목록으로</a>
