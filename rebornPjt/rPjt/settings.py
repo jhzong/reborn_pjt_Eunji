@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'store',
     'restaurants',
     'member',
-    'myPage',
+    'Book_Manage',
     ]
 
 MIDDLEWARE = [

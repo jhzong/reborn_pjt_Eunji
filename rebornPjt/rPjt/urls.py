@@ -9,9 +9,9 @@ urlpatterns = [
     path('member/', include('member.urls')),
     path('magazine/', include('magazine.urls')),
     path('store/', include('store.urls')),
+    path('Book_Manage/',include('Book_Manage.urls')),
     path('board/', include('board.urls')),
     path('restaurants/', include('restaurants.urls')),
-    path('myPage/', include('myPage.urls')),
 ]
 
 # 파일업로드시 url구성, urlpatterns에 추가 설정
