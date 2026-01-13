@@ -18,11 +18,7 @@ def bwrite(request):
             bpublisher = request.POST.get('bpublisher')# 출판사
             bpubdate = request.POST.get('bpubdate')# 출판일
             bprice = request.POST.get('bprice') # 가격
-<<<<<<< HEAD
             bimage = request.POST.get('bimage') # 이미지
-=======
-            bimage = request.FILES.get('bimage') # 이미지
->>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
             bdescription = request.POST.get('bdescription') # 책 소개
             bisbn = request.POST.get('bisbn') # 책고유번호
 
@@ -38,17 +34,10 @@ def bwrite(request):
             )
             return redirect('store:slist')
         
-<<<<<<< HEAD
 # 2. 도서정보 리스트
 def blist(request):
     # 게시글 모두 가져오기
     qs = Book.objects.all().order_by('-bpubdate','-bcreated_at')
-=======
-# 2.게시판 리스트
-def blist(request):
-    # 게시글 모두 가져오기
-    qs = Book.objects.all().order_by('-bcreated_at','-bpubdate')
->>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
     # 하단 넘버링 (qs,10) -> 1페이지 10개씩
     paginator = Paginator(qs,10)  # 101 -> 11
     # 현재페이지 넘김.
@@ -62,16 +51,9 @@ def blist(request):
 # 3.도서내용 상세보기
 def bview(request,bisbn):
     if request.method == 'GET':
-<<<<<<< HEAD
         qs = Book.objects.get(bisbn=bisbn)
         context = {'book':qs}
         return render(request,'Book_Manage/bview.html',context)
-=======
-        bisbn= request.GET.get('bisbn')
-        qs = Book.objects.get(bisbn=bisbn)
-        context = {'book':qs}
-    return render(request,'Book_Manage/bview.html',context)
->>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
 
         
 # 4.도서내용 수정하기
@@ -93,11 +75,7 @@ def bup_finish(request,bisbn):
         book.bpublisher = request.POST['bpublisher']
         book.bpubdate = request.POST['bpubdate']
         book.bprice = request.POST['bprice']
-<<<<<<< HEAD
         book.bimage = request.POST['bimage']
-=======
-        book.bimage = request.FILES['bimage']
->>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
         book.bdescription = request.POST['bdescription']
         # 3단계: 변경된 내용을 DB에 반영합니다. (저장하기)
         book.save() 

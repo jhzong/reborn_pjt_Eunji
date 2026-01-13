@@ -85,7 +85,6 @@
   <!-- 글수정 폼 -->
   <div class="write-container">
     <div class="write-title">도서내용 수정</div>
-<<<<<<< HEAD
     <form class="write-form" action="/Book_Manage/bup_finish/{{book.bisbn}}/" method='POST' enctype="multipart/form-data">
       {% csrf_token %}
       <input type="text" name='bisbn' placeholder="책고유번호" value='{{book.bisbn}}' required/>
@@ -95,17 +94,6 @@
       <input type="date" name='bpubdate' value='{{book.bpubdate}}'/>
       <input type="number" name='bprice' placeholder="책가격" value='{{book.bprice}}'/>
       <input type="text" name='bimage' placeholder="이미지 url" value='{{book.bimage}}'/>
-=======
-    <form class="write-form" action='{% url "Book_Manage:bup_finish" %}' method='POST' enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="text" name='bisbn' placeholder="책고유번호" value='{{book.bisbn}}' required/>
-      <input type="text" name='btitle' placeholder="책제목" value='{{book.btitle}}' required/>
-      <input type="text" name='bauthor' placeholder="지은이" value='{{book.bauthor}}' required />
-      <input type="text" name='bpublisher' placeholder="출판사" value='{{book.bpublisher}}' required />
-      <input type="date" name='bpubdate' placeholder="출판일" value='{{book.bpubdate}}' required />
-      <input type="number" name='bprice' placeholder="책가격" value='{{book.bprice}}' required />
-      <input type="file" name='bimage' placeholder="이미지 파일명" value='{{book.image}}' required />
->>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
       <textarea name='bdescription' placeholder="책소개를 입력하세요." maxlength="2000">{{book.bdescription}}</textarea>
 
       <div class="write-buttons">

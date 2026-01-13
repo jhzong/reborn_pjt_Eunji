@@ -33,10 +33,6 @@ INSTALLED_APPS = [
     'store',
     'restaurants',
     'member',
-<<<<<<< HEAD
-=======
-    'myPage',
->>>>>>> 32861ea624e67443fec12723a0c2459e00a80e60
     'Book_Manage',
     ]
 
